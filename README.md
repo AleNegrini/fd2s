@@ -88,7 +88,38 @@ Both of the two queues have a Lambda trigger in place, and each event triggers t
 - each event on ``sqs-model-x-ppg`` triggers the ``empatica-PPGDetection`` lambda
 - each event on ``sqs-model-x-temp`` triggers the ``empatica-TempDetection`` lambda
 
+The **Failure Detection** core logic is contained in two different lambdas:
+- ``empatica-PPGDetection``: lambda that contains the device failure on the PPG signal core logic
+- ``empatica-TempDetection``: lambda that contains the device failure on the Temperature signal core logic
 
+**Since devices are independent each other, each Lambda is intended to do the signal analysis on a single device on a
+single day. This model also allows to have an architecture horizontally scalable (as further detailed below).**
+
+If you want to have further details about the core logic and algorithmic choices, please refere to the EDA readme
+available [here](). 
+
+As a final step, the two lambdas store the failure detection analysis in two distinct DynamoDB tables: 
+- ``sqs-model-x-ppg`` 
+- ``sqs-model-x-temp``
+
+Both the two tables have as a partition key the unique fields' pair: 
+- `DeviceId`
+- `Date`
+
+For each device and date, a few metrics are stored.
+```
+{
+  "avg": "962.4583604180209",
+  "avg_anomaly": "YES",
+  "Date": "2021/02/04",
+  "DeviceId": "device_006",
+  "max": "1059.0",
+  "max_anomaly": "YES",
+  "min": "792.0",
+  "min_anomaly": "YES",
+  "timestamp": "05/04/2021 20:54:29"
+}
+```
 
 #### Assumptions
 - ass1: 
@@ -110,5 +141,6 @@ rule at 00:00 to leave a contingency for those data whose started to be uploaded
 
 ### How does the solution scale?
 
-### Solution limits 
+### Solution limits
+ 
 
