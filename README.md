@@ -141,11 +141,14 @@ I assume that by 01:00:00 every device data regarding the previous day has been 
 rule at 00:00 to leave a contingency for those data whose started to be uploaded slightly before midnight. 
 
 
-### Solution frequency computation
+### Solution computation frequency
+As just mentioned earlier, the computation frequency in this specific use case is daily.
+Every day at 1AM the "Orchestrator" lambda starts the anomaly detection logic for all the data received
+the day before. 
 
 ### How does the solution scale?
 One important aspect that drove the architecture design was the **scalability**. 
-Given that we are speaking about wearable devices, its number can rapidly increase and the architecture
+Given that we are dealing with wearable devices, its number can rapidly increase and the architecture
 should be able to horinzontally scale. 
 
 To make this possible, I introduced three components that allows the architecture to scale: 
@@ -154,7 +157,10 @@ To make this possible, I introduced three components that allows the architectur
 - DynamoDB
 
 **SQS queue**
-SQS is a serverless scalable service, since it 
+
+SQS is a serverless scalable service: standard queues support a nearly unlimited number of API calls
+per second, per API Action. 
+Standard Queues (not FIFO) are used in this solution.  
 
 **Lambda**
 
@@ -164,6 +170,9 @@ When the function code finishes running, it can handle another request.
 If the function is invoked again while a request is still being processed, another instance is allocated, which increases the function's concurrency. 
 This means that can have thousands of parallel requests made to the API and each result will be served by a separate Lambda function invocation.
 
-### Solution limits
- 
+**DynamoDB**
+
+Amazon DynamoDB is a NoSQL database that supports key-value (and document) data models.
+It is a serverless application that can scale globally to support tens of millions of read 
+and write requests per second.  
 
