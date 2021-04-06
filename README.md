@@ -28,7 +28,9 @@ docker run -it -v /Users/alessandro.negrini/Personal/fd2s/:/home/jovyan/work --r
 This is the cloud architecture I have thought to be one of the best one, given both the problem requests and the
  problem constraints. 
 
-**Note: the services used are 100% usable in an AWS free tier account.**  
+**Note1: the services used are 100% usable in an AWS free tier account.**
+
+**Note2: the architecture is 100% serverless** 
   
 On the left side of the architecture diagram you can see three buckets:
  - **empatica-tf-states**: it is the bucket that is solely used by the terraform backend to store the terraform states. 
@@ -42,7 +44,7 @@ The overall computation is triggered by a `cloudwatch crontab rule`:
 - **trigger-model-x-anomaly-detection**: it is a rule that at 01:00 of a given day, triggers the 
 `empatica-AnomalyOrchestration`. 
 The reason why I decided to use a Cloudwatch crontab rule and not a rule based on the PutItem on S3, is because I didn't 
-the way data were uploaded (single file vs batch files) (*ass2)
+know the way data were uploaded (single file upload vs multiple file upload) (*ass2)
 
 The just mentioned Cloudwatch rule, in turn, triggers a lambda called ``empatica-AnomalyOrchestration``, that, as the
 name suggests, is responsible of orchestrating the real failure detection logic.
@@ -66,7 +68,7 @@ empatica-model-x/2021/02/04/device_002/temperature.csv
 empatica-model-x/2021/02/04/device_001/on_wrist.csv
 empatica-model-x/2021/02/04/device_002/on_wrist.csv
 ```
-It then extracts the ``device-id`` from the path:
+It then extracts all the distinct ``device-id`` from the path:
 ```
 device_001
 device_002
@@ -93,7 +95,7 @@ The **Failure Detection** core logic is contained in two different lambdas:
 - ``empatica-TempDetection``: lambda that contains the device failure on the Temperature signal core logic
 
 **Since devices are independent each other, each Lambda is intended to do the signal analysis on a single device on a
-single day. This model also allows to have an architecture horizontally scalable (as further detailed below).**
+single day. This model also allows to have an horizontally scalable architecture (as further detailed below).**
 
 If you want to have further details about the core logic and algorithmic choices, please refere to the EDA readme
 available [here](). 
@@ -106,7 +108,9 @@ Both the two tables have as a partition key the unique fields' pair:
 - `DeviceId`
 - `Date`
 
-For each device and date, a few metrics are stored.
+For each device and date, a few metrics are stored. 
+
+For example: 
 ```
 {
   "avg": "962.4583604180209",
@@ -140,6 +144,25 @@ rule at 00:00 to leave a contingency for those data whose started to be uploaded
 ### Solution frequency computation
 
 ### How does the solution scale?
+One important aspect that drove the architecture design was the **scalability**. 
+Given that we are speaking about wearable devices, its number can rapidly increase and the architecture
+should be able to horinzontally scale. 
+
+To make this possible, I introduced three components that allows the architecture to scale: 
+- SQS queue
+- Lambda function
+- DynamoDB
+
+**SQS queue**
+SQS is a serverless scalable service, since it 
+
+**Lambda**
+
+Each request made by the SQS Lambda trigger will invoke a Lambda function. 
+When the function is invoked, Lambda allocates an instance of it to process the event. 
+When the function code finishes running, it can handle another request. 
+If the function is invoked again while a request is still being processed, another instance is allocated, which increases the function's concurrency. 
+This means that can have thousands of parallel requests made to the API and each result will be served by a separate Lambda function invocation.
 
 ### Solution limits
  
