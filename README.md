@@ -20,3 +20,17 @@ Each device is sending across 3 kinds of signals:
 ## EDA
 
 docker run -it -v /Users/alessandro.negrini/Personal/fd2s/:/home/jovyan/work --rm -p 8888:8888 jupyter/pyspark-notebook
+
+## Solution Architecture
+
+![Architecture](./resources/architecture.png "Solution Architecture")
+
+This is the cloud architecture I have thought to be one of the best one, considering the problem constraints. 
+ 
+
+### Solution frequency computation
+
+### How does the solution scale?
+
+### Solution limits 
+
