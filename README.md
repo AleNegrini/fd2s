@@ -94,6 +94,8 @@ The **Failure Detection** core logic is contained in two different lambdas:
 - ``empatica-PPGDetection``: lambda that contains the device failure on the PPG signal core logic
 - ``empatica-TempDetection``: lambda that contains the device failure on the Temperature signal core logic
 
+The two lambdas shares a set of common built-in libraries thanks to a `Lambda Layer` (e.g. pandas, numpy, ...)
+
 **Since devices are independent each other, each Lambda is intended to do the signal analysis on a single device on a
 single day. This model also allows to have an horizontally scalable architecture (as further detailed below).**
 
@@ -176,3 +178,4 @@ Amazon DynamoDB is a NoSQL database that supports key-value (and document) data 
 It is a serverless application that can scale globally to support tens of millions of read 
 and write requests per second.  
 
+### Solution enhancements
