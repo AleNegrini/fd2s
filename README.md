@@ -23,10 +23,10 @@ docker run -it -v /Users/alessandro.negrini/Personal/fd2s/:/home/jovyan/work --r
 
 ## Solution Architecture
 
+This is the cloud architecture I have thought to be one of the best one, given both the problem requirements and the problem constraints. 
+
 ![Architecture](./resources/architecture.png "Solution Architecture")
 
-This is the cloud architecture I have thought to be one of the best one, given both the problem requests and the
- problem constraints. 
 
 **Note1: the services used are 100% usable in an AWS free tier account.**
 
