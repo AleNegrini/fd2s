@@ -39,6 +39,9 @@ terraform plan
 ```
 
 ## Apply
+
+Note: before applying this code, makes sure the Lambda deployment packaged has been created, as explained [here](../code/README.md)
+
 Once the backend has been inizialiazed, you are free to deploy the tf infrastructure: 
 ```
 terraform apply
@@ -73,3 +76,16 @@ Once you want to destroy the infrastructure, it is sufficient to launch the comm
 ```
 terraform destroy
 ```
+
+### IaC project improvement
+- Terraform backend should use a DynamoDB table to lock concurrent infrastructure deployment
+- Use Terraform modules to deploy all the resources with the same settings and naming conventions
+- When I have to deal with Terraform modules, I'm used to use Terragrunt (that it is none other than a Terrform wrapper).
+Terragrunt allows to write a DRY IaC. Some of the advantages offered by Terragrunt (with respect to Terraform)
+    - automatically create the state and log buckets if does not exists
+    - automatically create the lock table if it not exists
+    - better infra components organization
+    - all resources share a common backend
+    - better management of module dependencies
+    - modular actions
+    - and many more

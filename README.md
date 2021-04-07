@@ -1,29 +1,10 @@
 # FD2S (Faulty Devices Detection System)
 
-## Data understanding
-
-Before lowering my head and writing even one single line of code, an essential step is to understand the data I'm working with.
-Developing a fault detection system without knowking the nature of data could be quite challenging.
-
-Each device is sending across 3 kinds of signals:
-
-- A photoplethysmogram (PPG) signal
-- A wrist temperature signal
-- A detection of on-wrist signal
-
-| Signal name | Description                                                                        | Frequency - Period         | Note                           |
-| ----------- | ---------------------------------------------------------------------------------- | -------------------------- | ------------------------------ |
-| PPG         | Signal about variations of blood volume changes in the microvascular bed of tissue | 64Hz - 1 sample per 0.016s |                                |
-| Wrist Temp  | Temperature detected on the wrist in cents of °C                                   | 4Hz - 1 sample per 0.25s   |                                |
-| On-wrist    | Detection whether the devices is worn or not                                       | 1Hz - 1 sample per second  | This values are always correct |
-
-## EDA
-
-docker run -it -v /Users/alessandro.negrini/Personal/fd2s/:/home/jovyan/work --rm -p 8888:8888 jupyter/pyspark-notebook
-
-## Solution Architecture
 
 ![Architecture](./resources/architecture.png "Solution Architecture")
+
+Before going deep with the solution architecture, I'd suggest to have a look to the Exploration Data Analysis (EDA)
+perfomed. You can find it [here](./eda/README.md)
 
 This is the cloud architecture I have thought to be one of the best one, given both the problem requests and the
  problem constraints. 
@@ -100,7 +81,7 @@ The two lambdas shares a set of common built-in libraries thanks to a `Lambda La
 single day. This model also allows to have an horizontally scalable architecture (as further detailed below).**
 
 If you want to have further details about the core logic and algorithmic choices, please refere to the EDA readme
-available [here](). 
+available [here](./code/README.md). 
 
 As a final step, the two lambdas store the failure detection analysis in two distinct DynamoDB tables: 
 - ``sqs-model-x-ppg`` 
@@ -110,20 +91,21 @@ Both the two tables have as a partition key the unique fields' pair:
 - `DeviceId`
 - `Date`
 
-For each device and date, a few metrics are stored. 
+For each device and date, a few metrics are stored and especially the indication whether the device functioning 
+is anomalous or not. 
 
 For example: 
 ```
 {
-  "avg": "962.4583604180209",
-  "avg_anomaly": "YES",
-  "Date": "2021/02/04",
-  "DeviceId": "device_006",
-  "max": "1059.0",
-  "max_anomaly": "YES",
-  "min": "792.0",
-  "min_anomaly": "YES",
-  "timestamp": "05/04/2021 20:54:29"
+  "avg": "8264.324694796887",
+  "avg_anomaly": "NO",
+  "Date": "2021/02/02",
+  "DeviceId": "device_001",
+  "max": "20332",
+  "max_anomaly": "NO",
+  "min": "3873",
+  "min_anomaly": "NO",
+  "timestamp": "07/04/2021 06:07:17"
 }
 ```
 
@@ -178,4 +160,11 @@ Amazon DynamoDB is a NoSQL database that supports key-value (and document) data 
 It is a serverless application that can scale globally to support tens of millions of read 
 and write requests per second.  
 
-### Solution enhancements
+### Solution enhancements 
+The challenge were solved in a limited amount of time and it is should be considered a prototype, rather than a production 
+ready solution. 
+As such, some choices have been made for easy and maybe are not compliant with security best practises: 
+- Terraform uses AWS CLI static credendials
+- No VPC, subnet or security groups were created
+- To make easier faulty device detection (especially when the number of devices is big) a dashboard could make the process
+more user-friendly

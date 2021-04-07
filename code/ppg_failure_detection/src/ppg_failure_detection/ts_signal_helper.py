@@ -19,7 +19,7 @@ class time_series_helper:
         :return: dataframe with the new frequency
         """
         arr = pd.DataFrame(0, index=np.arange(len(df) * target_frequency), columns=[column])
-        for index, value in df[column].items():
+        for index, value in arr[column].items():
             arr[column][index] = df[column][int(index / target_frequency)]
 
         return arr
@@ -55,3 +55,17 @@ class time_series_helper:
         data = {column1_name: series1,
                 column2_name: series2}
         return pd.concat(data, axis=1)
+
+    def get_ppg_on_wrist_only(self,
+                              df: DataFrame,
+                              column_name: str):
+        """
+        Method that returns a DataFrame with an additional column, containing the samples of PPG values
+        when the device is worn
+        :param df: dataframe to eval
+        :param column_name: new column name
+        :return: new dataframe
+        """
+        df[column_name] = df.apply(lambda row: row.ppg * row.on_wrist, axis=1)
+        df = df.drop(df[df[column_name] == 0].index)
+        return df

@@ -73,6 +73,11 @@ resource "aws_iam_policy" "temp-detection-policy" {
             "${aws_sqs_queue.empatica-queue-ppg.arn}",
             "${aws_sqs_queue.empatica-queue-temp.arn}"
           ]
+        },
+        {
+          "Action": "kms:*",
+          "Effect": "Allow",
+          "Resource": "*"
         }
     ]
 }
@@ -88,7 +93,7 @@ resource "aws_iam_role_policy_attachment" "attach-role-policy" {
 
 resource "aws_lambda_function" "temp_lambda" {
   s3_bucket     = "empatica-artifactory"
-  s3_key        = "temp_failure_detection_dp.zip"
+  s3_key        = "${aws_s3_bucket_object.temp_failure_detection.id}"
   function_name = "${var.prefix}-TemperatureDetection"
   role          = aws_iam_role.temp-detection-role.arn
   handler       = "lambda_function.lambda_handler"
@@ -117,7 +122,7 @@ resource "aws_lambda_function" "temp_lambda" {
 
 resource "aws_lambda_function" "ppg_lambda" {
   s3_bucket     = "empatica-artifactory"
-  s3_key        = "ppg_failure_detection_dp.zip"
+  s3_key        = "${aws_s3_bucket_object.ppg_failure_detection.id}"
   function_name = "${var.prefix}-PPGDetection"
   role          = aws_iam_role.temp-detection-role.arn
   handler       = "lambda_function.lambda_handler"
@@ -130,9 +135,9 @@ resource "aws_lambda_function" "ppg_lambda" {
 
   environment {
     variables = {
-      MAX_PPG_INF = "15000"
+      MAX_PPG_INF = "19000"
       MAX_PPG_SUP = "21000"
-      MIN_PPG_INF = "3000"
+      MIN_PPG_INF = "1000"
       MIN_PPG_SUP = "6000"
       AVG_PPG_INF = "5000"
       AVG_PPG_SUP = "11000"
@@ -213,6 +218,11 @@ resource "aws_iam_policy" "anomaly-orchestration-policy" {
             "${aws_sqs_queue.empatica-queue-ppg.arn}",
             "${aws_sqs_queue.empatica-queue-temp.arn}"
           ]
+        },
+        {
+          "Action": "kms:*",
+          "Effect": "Allow",
+          "Resource": "*"
         }
     ]
 }
@@ -228,7 +238,7 @@ resource "aws_iam_role_policy_attachment" "attach-role-policy_orch" {
 
 resource "aws_lambda_function" "anomaly_orchestration_lambda" {
   s3_bucket     = "empatica-artifactory"
-  s3_key        = "anomaly_orchestration_dp.zip"
+  s3_key        = "${aws_s3_bucket_object.lambda_anomaly_orchestration.id}"
   function_name = "${var.prefix}-AnomalyOrchestration"
   role          = aws_iam_role.anomaly_orchestration_role.arn
   handler       = "lambda_function.lambda_handler"
