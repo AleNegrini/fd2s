@@ -4,7 +4,6 @@
 
 - Terraform 0.12.24
 - AWS CLI credentials (profile name: empatica)
--
 
 ## Preliminary step
 
