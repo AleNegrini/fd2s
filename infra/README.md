@@ -89,7 +89,7 @@ Once you want to destroy the infrastructure, it is sufficient to launch the comm
 terraform destroy
 ```
 
-### IaC project improvement
+## IaC project improvement
 
 - Terraform backend should use a DynamoDB table to lock concurrent infrastructure deployment
 - Use Terraform modules to deploy all the resources with the same settings and naming conventions

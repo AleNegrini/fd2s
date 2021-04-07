@@ -16,10 +16,10 @@ Each device is sending across 3 kinds of signals:
 | On-wrist    | Detection whether the devices is worn or not                                       | 1Hz - 1 sample per second  | This values are always correct |
 
 
-Before starting expliciting the algorithmic choices I went for, I'd like to male a small premise:
+Before starting expliciting the algorithmic choices I went for, I'd like to make a small premise:
 * I don't have any medical knowledge, therefore during the development I did a few assumptions (further details below). 
 I apologize for any assumptions that do not have any medical truth
-* I have rarely dealt with time series. I am pretty sure there are libraries that allows to achieve the same behaviour
+* I have rarely dealt with time series. I am pretty sure there are libraries that allows to achieve the same results
 in a more optimized way. I used `pandas` and I dealt signals as `pandas Series` and `Dataframes`. 
 
 ## Algorithmic/Infrastructure choices
@@ -57,6 +57,8 @@ a controlled environment (the human body)), I multiply the signals and delete th
 This way the signal I am working with, will show only the body temperature metrics
 
     ![Temp On Wrist](../resources/temp_on_wrist.png "Temp On Wrist")
+    
+    The graph above clearly shows the transition time
 
 * Once removed "dirty" samples, we can proceed with the evaluation of a few statistics metrics that allowed me to
 spot which are faulty devices:
@@ -118,6 +120,8 @@ the transition time taken from the device to get up to speed.
 To fix it, what can be done is not only to delete samples of signals when the device is not worn, but also
 in a interval slightly before and after. 
 
+To make the solution more robust, maybe we could add more statistics metrics, such as (std, 90percentile, ...). 
+
 ### Faulty device detection regarding the PPG signal
 Unlike from the temperature signal, the problem didn't state the measure unit of the PPG metric. 
 I did a few online searches, but without any success. 
@@ -138,8 +142,8 @@ wrist temperature one.
 ### Faulty detection algorithm
 * The two signals (`on_wrist` and `wrist_temperature`) have two different frequencies, respectively 1Hz and 64Hz. 
 Therefore, after reading them I brought them at the same frequency:
- - `on_wrist` signal to 1Hz to 4Hz
- - `wrist_temperature` sampled from 64Hz to 4Hz (statistics metrics does not have any impact)
+  - `on_wrist` signal to 1Hz to 4Hz
+  - `wrist_temperature` sampled from 64Hz to 4Hz (statistics metrics does not have any impact)
 * Since I'd like to analyse the PPG signal only when the device in worn (in this way I am analysing the signal in 
 a controlled environment (the human body)), I multiply the signals and delete the samples at 0.  
 This is the same approach used for the temperature.

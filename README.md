@@ -1,5 +1,10 @@
 # FD2S (Faulty Devices Detection System)
 
+## Requirements
+- Terraform (v0.12.24)
+- AWS CLI installed 
+- AWS CLI credentials with profile called 'empatica'
+- Docker if you would like to open the Jupyter notebooks
 
 ![Architecture](./resources/architecture.png "Solution Architecture")
 
