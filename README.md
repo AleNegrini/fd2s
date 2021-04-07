@@ -3,10 +3,7 @@
 
 ![Architecture](./resources/architecture.png "Solution Architecture")
 
-Before going deep with the solution architecture, I'd suggest to have a look to the Exploration Data Analysis (EDA)
-perfomed. You can find it [here](./eda/README.md)
-
-This is the cloud architecture I have thought to be one of the best one, given both the problem requests and the
+This is the cloud architecture I have thought to be one of the best one, given both the problem requirements and the
  problem constraints. 
 
 **Note1: the services used are 100% usable in an AWS free tier account.**
@@ -81,7 +78,7 @@ The two lambdas shares a set of common built-in libraries thanks to a `Lambda La
 single day. This model also allows to have an horizontally scalable architecture (as further detailed below).**
 
 If you want to have further details about the core logic and algorithmic choices, please refere to the EDA readme
-available [here](./code/README.md). 
+available [here](./eda/README.md). 
 
 As a final step, the two lambdas store the failure detection analysis in two distinct DynamoDB tables: 
 - ``sqs-model-x-ppg`` 
@@ -168,3 +165,8 @@ As such, some choices have been made for easy and maybe are not compliant with s
 - No VPC, subnet or security groups were created
 - To make easier faulty device detection (especially when the number of devices is big) a dashboard could make the process
 more user-friendly
+
+### Useful links
+- Terraform infra README -> [link](./infra/README.md)
+- How to build and manually run lambdas -> [link](./code/README.md)
+- EDA README -> [link](./eda/README.md)
