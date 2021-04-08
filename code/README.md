@@ -48,3 +48,18 @@ If you want to manually trigger this lambda for checking a device D at day T, it
 
 ### empatica-PPGDetection
 The same considerations for the ``empatica-TempDetection`` applies for this Lambda
+
+## Run Tests locally
+If you'd like to run locally a few tests, each function has its own environment. 
+Thus for each function, create a virtualenv (with python3.8): 
+
+```
+virtualenv -p <path_to_python3.8> .penv
+```
+
+And for each virtualenv, install function specific requirements
+
+```
+pip install -r requirements.txt
+```
+You can find the requirements file inside any ``src/<project_name>``
